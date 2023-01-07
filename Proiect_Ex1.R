@@ -73,13 +73,14 @@ f2<-function(functie,opt,a=0,b=100){ # de adaugat caz discret
   
 }
 
-#3
+#3+#5
 
-dim<-c(30,100,1000)
+dim<-c(30,1000,100000)
 
 
 
-margine<-function(n,functie,opt,a=0,b=100){
+#5
+margine<-function(n,functie,opt,a=0,b=100){ 
   
   med<-f2(functie,opt,a,b)
   sigmaCub<-sqrt(varianta(functie,opt,a,b))^3
@@ -109,7 +110,7 @@ Exponentiala<-function(x){
 }
 
 Gamma<-function(x){
-  return (dgamma(x,shape=3,rate=4,scale=1/4))
+  return (dgamma(x,shape=3,rate=4))
 }
 
 Beta<-function(x){
@@ -197,4 +198,42 @@ margini.data<-data.frame(
   
 )
 
-print (margini.data)          
+print (margini.data)    
+
+
+relatie<-function(x,n,sigma,miu){
+    return(sigma*sqrt(n)*x+n*miu)
+}
+
+
+interval<-seq(-3,3,0.1)
+prob<-c()
+
+
+n<-1
+
+#precizie<-1000
+
+
+#for (x in interval){
+ # fav<-0
+  #for (t in 1:precizie){
+   #   if(sum(rgeom(n,1/3))<=relatie(x,n,varianta(Geometrica,0),medie(Geometrica,0))){
+     #     fav<-fav+1
+    #  }
+  #}
+  #prob<-c(prob,fav/precizie)
+#}
+
+rez1<-pnbinom(relatie(interval,n,varianta(Geometrica,0),medie(Geometrica,0)),n,1/3)-pnorm(interval)
+
+plot(interval,rez1,type='l')
+
+test1<-pnbinom(relatie(interval,n,varianta(Geometrica,0),medie(Geometrica,0)),n,1/3)
+
+plot(interval,test1,type='l')
+lines(interval,pnorm(interval,0,1),col='red')
+
+
+rez2<-pgamma(relatie(interval,n,varianta(Exponentiala,1),medie(Exponentiala,1)),n,1/3)-pnorm(interval)
+plot(interval,rez2,type='l')
