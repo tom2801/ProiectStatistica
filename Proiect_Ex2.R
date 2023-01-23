@@ -17,6 +17,10 @@ raport<-function(x){
   return(f(x)/dnorm(x)) 
 }
 
+raportbis<-function(x){
+  return(f(x,3.852985)/dnorm(x)) 
+}
+
 raport1<-function(x){
   return(f(x)/g1(x)) 
 }
@@ -28,7 +32,7 @@ raport2<-function(x){
 #print(integrate(f,0,Inf,3.852985))
 
 medie_exacta<-integrate(fmed,0,Inf)$value
-print(medie_exacta)
+#print(medie_exacta)
 
 func1 <- function(dummy, k=2)
 {
@@ -40,44 +44,62 @@ func1 <- function(dummy, k=2)
       y<-rnorm(1)
     }
     
-    g1 <- dnorm(y)
+    g1 <- 2*dnorm(y)
     if (u <= f(y) / (k* g1)) return(y) 
   }
 }
 
 
-alt1 <- function(dummy, k=2)
+alt1 <- function(dummy, k=1)
 {
     u <- runif(1)
     y <- rnorm(1)
     while(y<0){
       y<-rnorm(1)
     }
-    g1 <- dnorm(y)
-    if (u <= f(y) / (k* g1)) return(1) 
+    g1 <- 2*dnorm(y)
+    if (u <= f(y,3.852985) / (k* g1)) return(1) 
     return(0)
 }
 
-acceptate<-sapply(1:10^5,alt1,1)
-
-rata<-mean(acceptate)
 
 x<-seq(0,4,0.01)
 
 sup<-optimise(raport,x,maximum=TRUE)
+supbis<-optimise(raportbis,x,maximum=TRUE)
 sup1<-optimise(raport1,x,maximum=TRUE)
 sup2<-optimise(raport2,x,maximum=TRUE)
 
 
+
+acceptate<-sapply(1:10^5,alt1,supbis$objective)
+
+rata<-mean(acceptate)
+
+
+
+
+
+
 plot(x,f(x,3.852985),type='l',col='blue')
 lines(x,sup$objective*dnorm(x))
+lines(x,supbis$objective*dnorm(x))
 lines(x,f(x),col='red')
 lines(x,sup1$objective*g1(x), col="green")
 lines(x,sup2$objective*g2(x), col="pink")
 
 rez<-sapply(1:10^5,func1,sup$objective)
-medie<-mean(rez)
-print(medie)
-hist(rez,freq=F)
-lines(x,f(x,3.852985))
 
+maxim_simulat<-optimise(f,x,maximum = TRUE)$objective
+print(maxim_simulat*1/sup$objective)
+
+medie<-mean(rez)
+#print(medie)
+hist(rez,freq=F)
+lines(x,f(x,3.852985),col='blue')
+lines(x,f(x))
+lines(medie,f(medie),type='p')
+lines(medie,f(medie,3.852985),type='p',col='blue')
+lines(x,f(x,sup$objective/f(medie
+                            )),col='red')
+# lines(x,sup$objective*dnorm(x))
