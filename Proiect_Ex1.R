@@ -75,7 +75,7 @@ f2<-function(functie,opt,a=0,b=100){ # de adaugat caz discret
 
 #3+#5
 
-dim<-c(30,1000,100000)
+dim<-c(30,100,1000)
 
 
 
@@ -201,39 +201,60 @@ margini.data<-data.frame(
 print (margini.data)    
 
 
-relatie<-function(x,n,sigma,miu){
-    return(sigma*sqrt(n)*x+n*miu)
-}
+# vreau sa fac o functie care primeste un x si face cu precizia
+
+# repartitieEmpirica<-function(Zn,x){
+#     
+# }
+# 
+# 
+# SvZ<-function(esantion,n,sigma,miu){
+#    return(sqrt(n)*(mean(esantion)-miu)/sigma)
+# }
+# 
+# precizie<-100
+# 
+# for (i in c(30,100,1000)){
+#    domeniu<-seq(-3,3,0.1)
+#    
+#    Xn<-rbinom(i,5,1/3)
+#    Zn<-SvZ(Xn,i,sqrt(varianta(Binomiala,0)),medie(Binomiala,0))
+#    
+# }
+
 
 
 interval<-seq(-3,3,0.1)
-prob<-c()
+
+sv<-function(x,sigma,miu,n){
+  return(n*(x*sigma/sqrt(n)+miu))
+}
+
+for (i in c(30,100,1000)){
+  sigma<-sqrt(varianta(Binomiala,0))
+  miu<-medie(Binomiala,0)
+  
+  plot(interval,abs(pbinom(sv(interval,sigma,miu,i),i*5,1/3)-pnorm(interval)),type='l')
+  abline(h=marginiBin[1],col='red')
+  abline(h=marginiBin[2],col='blue')
+  abline(h=marginiBin[3],col='magenta')
+  plot(interval,pnorm(interval),type='l',col='blue')
+  lines(interval,pbinom(sv(interval,sigma,miu,i),i*5,1/3),col='red')
+  
+}
 
 
-n<-1
-
-#precizie<-1000
-
-
-#for (x in interval){
- # fav<-0
-  #for (t in 1:precizie){
-   #   if(sum(rgeom(n,1/3))<=relatie(x,n,varianta(Geometrica,0),medie(Geometrica,0))){
-     #     fav<-fav+1
-    #  }
-  #}
-  #prob<-c(prob,fav/precizie)
-#}
-
-rez1<-pnbinom(relatie(interval,n,varianta(Geometrica,0),medie(Geometrica,0)),n,1/3)-pnorm(interval)
-
-plot(interval,rez1,type='l')
-
-test1<-pnbinom(relatie(interval,n,varianta(Geometrica,0),medie(Geometrica,0)),n,1/3)
-
-plot(interval,test1,type='l')
-lines(interval,pnorm(interval,0,1),col='red')
+for (i in c(30,100,1000)){
+  sigma<-sqrt(varianta(Gamma,1))
+  miu<-medie(Gamma,1)
+  
+  plot(interval,abs(pgamma(sv(interval,sigma,miu,i),i*3,4)-pnorm(interval)),type='l')
+  abline(h=marginiGamma[1],col='red')
+  abline(h=marginiGamma[2],col='blue')
+  abline(h=marginiGamma[3],col='magenta')
+  plot(interval,pnorm(interval),type='l',col='blue')
+  lines(interval,pgamma(sv(interval,sigma,miu,i),i*3,4),col='red')
+  
+}
 
 
-rez2<-pgamma(relatie(interval,n,varianta(Exponentiala,1),medie(Exponentiala,1)),n,1/3)-pnorm(interval)
-plot(interval,rez2,type='l')
