@@ -102,7 +102,7 @@ Poisson<-function(x){
 }
 
 Unifcont<-function(x){
-  return (dunif(x,4,7))
+  return (dunif(x,0,1))
 }
 
 Exponentiala<-function(x){
@@ -230,6 +230,7 @@ sv<-function(x,sigma,miu,n){
   return(n*(x*sigma/sqrt(n)+miu))
 }
 
+#Binomiala
 for (i in c(30,100,1000)){
   sigma<-sqrt(varianta(Binomiala,0))
   miu<-medie(Binomiala,0)
@@ -244,6 +245,52 @@ for (i in c(30,100,1000)){
 }
 
 
+#Geometrica
+for (i in c(30,100,1000)){
+  sigma<-sqrt(varianta(Geometrica,0))
+  miu<-medie(Geometrica,0)
+  
+  plot(interval,abs(pnbinom(sv(interval,sigma,miu,i),i,1/3)-pnorm(interval)),type='l')
+  abline(h=marginiGeo[1],col='red')
+  abline(h=marginiGeo[2],col='blue')
+  abline(h=marginiGeo[3],col='magenta')
+  plot(interval,pnorm(interval),type='l',col='blue')
+  lines(interval,pnbinom(sv(interval,sigma,miu,i),i,1/3),col='red')
+  
+}
+
+
+#Poission
+for (i in c(30,100,1000)){
+  sigma<-sqrt(varianta(Poisson,0))
+  miu<-medie(Poisson,0)
+  
+  plot(interval,abs(ppois(sv(interval,sigma,miu,i),i*1/3)-pnorm(interval)),type='l')
+  abline(h=marginiPois[1],col='red')
+  abline(h=marginiPois[2],col='blue')
+  abline(h=marginiPois[3],col='magenta')
+  plot(interval,pnorm(interval),type='l',col='blue')
+  lines(interval,ppois(sv(interval,sigma,miu,i),i*1/3),col='red')
+  
+}
+
+
+#Exponentiala
+for (i in c(30,100,1000)){
+  sigma<-sqrt(varianta(Exponentiala,1))
+  miu<-medie(Exponentiala,1)
+  
+  plot(interval,abs(pgamma(sv(interval,sigma,miu,i),i,1/3)-pnorm(interval)),type='l')
+  abline(h=marginiExponentiala[1],col='red')
+  abline(h=marginiExponentiala[2],col='blue')
+  abline(h=marginiExponentiala[3],col='magenta')
+  plot(interval,pnorm(interval),type='l',col='blue')
+  lines(interval,pgamma(sv(interval,sigma,miu,i),i,1/3),col='red')
+  
+}
+
+
+#Gamma
 for (i in c(30,100,1000)){
   sigma<-sqrt(varianta(Gamma,1))
   miu<-medie(Gamma,1)
@@ -258,3 +305,30 @@ for (i in c(30,100,1000)){
 }
 
 
+comb <- function(n, x) {
+  factorial(n) / (factorial(n-x)*factorial(x))
+}
+
+
+IrwinHall <- function(x, n){ #CDF-ul variabilei aleatoare Irwin-Hall (suma de Unif(0,1))
+  s<-0
+  for(k in 0:n){
+    s<-s+(-1)^k*comb(n,k)*sign(x-k)*(x-k)^n
+  }
+  return(1/2+1/(2*factorial(n))*s)
+}
+
+#Unifcont
+
+
+
+
+
+for (i in c(5,10,15)){ #CDF-ul Irwin-Hall este foarte volatil
+  sigma<-sqrt(varianta(Unifcont,1)) #a fost necesara modificarea dimensiunilor esantionului
+  miu<-medie(Unifcont,1)
+  ih<-IrwinHall(sv(interval,sigma,miu,i),i)
+  plot(interval,abs(ih-pnorm(interval)),type='l')
+  plot(interval,pnorm(interval),type='l',col='blue')
+  lines(interval,ih,col='red')
+    }

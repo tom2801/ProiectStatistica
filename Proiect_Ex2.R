@@ -8,8 +8,11 @@ g2 <- function(x){
 
 
 rg2 <- function(n){
-   # a se completa 
+  u <- runif(n)
+  return(2*tan(pi*u))
 }
+
+
 
 
 fmed<-function(x){
@@ -22,7 +25,7 @@ raport1<-function(x){
 }
 
 raport2<-function(x){
-  return(f(x)/g2(x)) 
+  return(f(x)/(2*g2(x))) 
 }
 
 raport3<-function(x){
@@ -39,10 +42,6 @@ func1 <- function(dummy, k=1)
   { 
     u <- runif(1)
     y <- rexp(1)
-    while(y<0){
-      y<-rnorm(1)
-    }
-    
     g <- dexp(y)
     if (u <= f(y) / (k* g)) return(y) 
   }
@@ -53,25 +52,43 @@ freq1 <- function(dummy, k=1)
 {
   u <- runif(1)
   y <- rexp(1)
-  while(y<0){
-    y<-rnorm(1)
-  }
   g1 <- dexp(y)
   if (u <= f(y) / (k* g1)) return(1) 
   return(0)
 }
 
+func2 <- function(dummy, k=1)
+{
+  while (TRUE)
+  { 
+    u <- runif(1)
+    y <- abs(rg2(1))
+    g <- 2*g2(y)
+    if (u <= f(y) / (k* g)) return(y) 
+  }
+}
 
+freq2 <- function(dummy, k=1)
+{
+  while (TRUE)
+  { 
+    u <- runif(1)
+    y <- abs(rg2(1))
+    g <- 2*g2(y)
+    if (u <= f(y) / (k* g)) return(1) 
+    return(0)
+  }
+}
 
 func3 <- function(dummy, k=1)
 {
   while (TRUE)
   { 
     u <- runif(1)
-    y <- rnorm(1)
-    while(y<0){
-      y<-rnorm(1)
-    }
+    y <- abs(rnorm(1))
+    # while(y<0){
+    #   y<-rnorm(1)
+    # }
     
     g <- 2*dnorm(y)
     if (u <= f(y) / (k* g)) return(y) 
@@ -79,20 +96,20 @@ func3 <- function(dummy, k=1)
 }
 
 aux3 <- function (nr,rez){
- 
+  
   return(mean(rez[1:nr]))
 }
 
 freq3<- function(dummy, k=1)
 {
-    u <- runif(1)
-    y <- rnorm(1)
-    while(y<0){
-      y<-rnorm(1)
-    }
-    g1 <- 2*dnorm(y)
-    if (u <= f(y) / (k* g1)) return(1) 
-    return(0)
+  u <- runif(1)
+  y <- abs(rnorm(1))
+  # while(y<0){
+  #   y<-rnorm(1)
+  # }
+  g1 <- 2*dnorm(y)
+  if (u <= f(y) / (k* g1)) return(1) 
+  return(0)
 }
 
 
@@ -105,35 +122,88 @@ sup3<-optimise(raport3,x,maximum=TRUE)
 
 
 acceptate1<-sapply(1:10^5,freq1,sup1$objective)
+acceptate2<-sapply(1:10^5,freq2,sup2$objective)
 acceptate3<-sapply(1:10^5,freq3,sup3$objective)
 
 rata1<-mean(acceptate1)
+rata2<-mean(acceptate2)
 rata3<-mean(acceptate3)
 
 constAprox1<-1/((sup1$objective)*rata1)
+constAprox2<-1/((sup2$objective)*rata2)
 constAprox3<-1/((sup3$objective)*rata3)
 
 
 
 rez1<-sapply(1:10^5,func1,sup1$objective)
-rez3<-sapply(1:10^6,func3,sup3$objective)
-
-medie3<-mean(rez3)
-
-medii3<-cumsum(rez3)/seq_along(rez3)
+rez2<-sapply(1:10^5,func2,sup2$objective)
+rez3<-sapply(1:10^5,func3,sup3$objective)
 
 
-criteriu<-which(abs(medii3-medie_exacta)<=0.001)
+rezultate3<-c()
 
-print(criteriu)
+for (i in 1:10){
+  
+  rezultate3<-c(rezultate3,mean(sapply(1:10^5,func3,sup3$objective)))
+  
+}
+
+plot(1:10,rezultate3, type = "o" )
+abline(h = medie_exacta+0.001, col = "red") 
+abline(h = medie_exacta-0.001, col = "red") 
+abline(h = medie_exacta, col = "blue") 
+
+
+rezultate3p<-c()
+
+for (i in 1:10){
+  
+  rezultate3p<-c(rezultate3p,mean(sapply(1:10^6,func3,sup3$objective)))
+  
+}
+
+plot(1:10,rezultate3p, type = "o" )
+abline(h = medie_exacta+0.001, col = "red") 
+abline(h = medie_exacta-0.001, col = "red") 
+abline(h = medie_exacta, col = "blue") 
+
+# medie1<-mean(rez1)
+# 
+# medii1<-cumsum(rez1)/seq_along(rez1)
+# 
+# criteriu1<-which(abs(medii1-medie_exacta)<=0.001)
+# 
+# print(criteriu1)
+# 
+# 
+# 
+# 
+# medie2<-mean(rez2)
+# 
+# medii2<-cumsum(rez2)/seq_along(rez2)
+# 
+# criteriu2<-which(abs(medii2-medie_exacta)<=0.001)
+# 
+# print(criteriu2)
+# 
+# 
+# 
+# medie3<-mean(rez3)
+# 
+# medii3<-cumsum(rez3)/seq_along(rez3)
+# 
+# criteriu3<-which(abs(medii3-medie_exacta)<=0.001)
+# 
+# print(criteriu3)
+
 
 hist(rez1,freq=F)
-
 lines(x,f(x,constAprox1),col='red')
 
+hist(rez2,freq=F)
+lines(x,f(x,constAprox2),col='red')
 
 hist(rez3,freq=F)
-
 lines(x,f(x,constAprox3),col='red')
 
 
