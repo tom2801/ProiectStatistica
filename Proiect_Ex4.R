@@ -34,7 +34,7 @@ check.convergence(nmax=n, M=no, genXn=sample2, mode="L", probfunc=repartitie1bis
 
 #2
 sample3 <- function(n){
-  multime<-seq_along(1:n)/n
+  multime<-(1:n)/n
   X_i<-sample(multime,n,replace=TRUE)
   return(X_i)
 }
@@ -54,28 +54,31 @@ check.convergence(nmax=1000, M=500, genXn=sample3, epsilon=0.05, mode="p",probfu
 
 #3
 
+
+auxm<-function(n){
+  return(min(runif(n,0,10*n)))
+}
+
+auxM<-function(n){
+  return(max(runif(n,0,10*n)))
+}
+
 sample4<-function(n){
   rez<-c()
-  for (i in rep(n,n)){
-    rez<-c(rez,min(runif(i,0,1)))
-  }
-  return (rez)
+  return(sapply(rep(n,n),auxm))
+
   
 }
 
 
 sample4bis<-function(n){
   rez<-c()
-  for (i in rep(n,n)){
-    rez<-c(rez,max(runif(i,0,1)))
-  }
-  return (rez-1)
-  
+  return(10*n-sapply(rep(n,n),auxM))
 }
 
 
-check.convergence(nmax=1000, M=500, genXn=sample4, mode="as")
-check.convergence(nmax=1000, M=500, genXn=sample4bis, mode="as")
+check.convergence(nmax=1000, M=500, genXn=sample4, mode="as",epsilon=60)
+check.convergence(nmax=1000, M=500, genXn=sample4bis, mode="as",epsilon=60)
 
 
 
