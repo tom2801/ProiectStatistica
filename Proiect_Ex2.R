@@ -140,32 +140,32 @@ rez2<-sapply(1:10^5,func2,sup2$objective)
 rez3<-sapply(1:10^5,func3,sup3$objective)
 
 
-rezultate3<-c()
+#rezultate3<-c()
 
-for (i in 1:10){
-  
-  rezultate3<-c(rezultate3,mean(sapply(1:10^5,func3,sup3$objective)))
-  
-}
-
-plot(1:10,rezultate3, type = "o" )
-abline(h = medie_exacta+0.001, col = "red") 
-abline(h = medie_exacta-0.001, col = "red") 
-abline(h = medie_exacta, col = "blue") 
-
-
-rezultate3p<-c()
-
-for (i in 1:10){
-  
-  rezultate3p<-c(rezultate3p,mean(sapply(1:10^6,func3,sup3$objective)))
-  
-}
-
-plot(1:10,rezultate3p, type = "o" )
-abline(h = medie_exacta+0.001, col = "red") 
-abline(h = medie_exacta-0.001, col = "red") 
-abline(h = medie_exacta, col = "blue") 
+# for (i in 1:10){
+#   
+#   rezultate3<-c(rezultate3,mean(sapply(1:10^5,func3,sup3$objective)))
+#   
+# }
+# 
+# plot(1:10,rezultate3, type = "o" )
+# abline(h = medie_exacta+0.001, col = "red") 
+# abline(h = medie_exacta-0.001, col = "red") 
+# abline(h = medie_exacta, col = "blue") 
+# 
+# 
+# rezultate3p<-c()
+# 
+# for (i in 1:10){
+#   
+#   rezultate3p<-c(rezultate3p,mean(sapply(1:10^6,func3,sup3$objective)))
+#   
+# }
+# 
+# plot(1:10,rezultate3p, type = "o" )
+# abline(h = medie_exacta+0.001, col = "red") 
+# abline(h = medie_exacta-0.001, col = "red") 
+# abline(h = medie_exacta, col = "blue") 
 
 # medie1<-mean(rez1)
 # 
@@ -209,4 +209,33 @@ lines(x,f(x,constAprox3),col='red')
 
 
 
+#aproximarea mediei
+sim_est_medie3<-sapply(1:10^6,freq3,sup3$objective)
 
+
+est3<-mean(sim_est_medie3)
+
+est_freq3<-cumsum(sim_est_medie3)/seq_along(sim_est_medie3)
+
+est_freq3<-est_freq3[est_freq3!=0]
+
+est_constante_aprox3<-1/(est_freq3*sup3$objective)
+
+fmedAux<-function(x,a){
+  return(x*f(x,a))
+}
+
+integrare_auxiliara<-function(constanta){
+  return (integrate(fmedAux,0,Inf,a=constanta)$value)
+}
+
+medii_aprox3<-sapply(est_constante_aprox3,integrare_auxiliara)
+
+
+medii_acceptate3<-which(abs(medii_aprox3-medie_exacta)<0.001)
+
+print(mean(medii_acceptate3))
+
+# print(est_constante_aprox3[length(est_constante_aprox3)])
+# 
+# print(est_freq3[length(est_freq3)])
