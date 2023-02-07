@@ -234,7 +234,19 @@ medii_aprox3<-sapply(est_constante_aprox3,integrare_auxiliara)
 
 medii_acceptate3<-which(abs(medii_aprox3-medie_exacta)<0.001)
 
-print(mean(medii_acceptate3))
+reznraprox3<-mean(medii_acceptate3)
+
+rezultate3<-c()
+for (i in 1:10){
+  
+  rezultate3<-c(rezultate3,mean(sapply(1:reznraprox3,func3,sup3$objective)))
+  
+}
+
+plot(1:10,rezultate3, type = "o" )
+abline(h = medie_exacta+0.001, col = "red")
+abline(h = medie_exacta-0.001, col = "red")
+abline(h = medie_exacta, col = "blue")
 
 # print(est_constante_aprox3[length(est_constante_aprox3)])
 # 

@@ -332,3 +332,34 @@ for (i in c(5,10,15)){ #CDF-ul Irwin-Hall este foarte volatil
   plot(interval,pnorm(interval),type='l',col='blue')
   lines(interval,ih,col='red')
     }
+
+
+
+#pdf aprox suma beta
+aprox_suma_beta <- function(x, alfa, n) {
+  a <- alfa*(alfa*n+2*n-1)/(alfa+1)
+  b <- (alfa*n+2*n-1)/(alfa+1)
+  return(gamma(a+b)/(n*gamma(a)*gamma(b)) * (x/n)^(a-1) * (1-x/n)^(b-1))
+}
+
+
+#cdf aprox suma beta
+aprox_suma_beta_cdf <- function(x, alfa, n){
+  return(integrate(aprox_suma_beta, 0, x, alfa=alfa, n=n)$value)
+}
+
+
+
+
+for (i in c(10,15,30)){
+  sigma<-sqrt(varianta(Beta,1))
+  miu<-medie(Beta,1)
+  date<-sapply(sv(interval,sigma,miu,i),aprox_suma_beta_cdf,3,i)
+  plot(interval,date-pnorm(interval),type='l')
+  abline(h=marginiGamma[1],col='red')
+  abline(h=marginiGamma[2],col='blue')
+  abline(h=marginiGamma[3],col='magenta')
+  plot(interval,pnorm(interval),type='l',col='blue')
+  lines(interval,date,col='red')
+  
+}
